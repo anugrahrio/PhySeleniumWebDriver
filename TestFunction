@@ -1,0 +1,93 @@
+import time
+from selenium import webdriver  ## import dulu seleniumnya
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+
+# driver = webdriver.Chrome(executable_path="D:\\chromedriver.exe")
+
+services = Service("D:\\chromedriver.exe")
+driver: WebDriver = webdriver.Chrome(service=services)
+driver.get("https://rahulshettyacademy.com/seleniumPractise")
+driver.implicitly_wait(5)
+
+## disini akan menjoba menguji aplikasi web dengan fungsi sebagai berikut
+# 1. memvalidasi apapun produk yg telah dipilih dalam halaman pertama akan muncul dihalaman kedua.
+# 2. memverifikasi jika ada pengurangan harga dengan diskon
+# 3. memverifikasi jumlah dari produk  dalam halaman checkout sesuai dengan total jumlahnya.
+
+## case 1(memvalidasi apapun produk yg telah dipilih dalam halaman pertama akan muncul dihalaman kedua)
+
+driver.find_element_by_css_selector("input.search-keyword").send_keys("ber")  ##suggestion box bisa
+time.sleep(5)
+tstjmlh = driver.find_elements_by_xpath("//div[@class='product']")
+#print(len(tstjmlh))
+# buat ngeklik semua tombolnya
+tombols = driver.find_elements_by_xpath("//div[@class='product-action']/button")
+
+for tombol in tombols:
+    tombol.click()  #fungsi tombol tambah bisa
+
+prdcd = driver.find_elements_by_xpath("//h4[@class='product-name']")
+listprdcd = []
+listprdcd2 = []
+for prdcds in prdcd: #
+    listprdcd.append(prdcds.text)
+    print(prdcds.text) #ngecek nama itemnya bisa dihalaman pertama(
+
+jmlhprdcd=len(listprdcd)
+jmlhprdcd1=0
+driver.find_element_by_xpath("//img[@alt='Cart']").click()#tombol keranjangnya bisa
+driver.find_element_by_xpath("//button[contains(text(),'PROCEED TO CHECKOUT')]").click()#tombol checkoutnya bisa
+prdcd2 =driver.find_elements_by_css_selector("p.product-name")
+#//p[@class='product-name'] //p[@style]
+
+
+
+for prdcds2 in prdcd2:
+    listprdcd2.append(prdcds2.text)
+    jmlhprdcd1 = jmlhprdcd1 + 1
+    print(prdcds2.text)#ngecek nama itemnya bisa dihalaman kedua(keranjang)
+    if jmlhprdcd == jmlhprdcd1:
+        break
+
+
+print("item produk pertama: ", listprdcd)
+print("item produk kedua: ", listprdcd2)
+
+
+
+if listprdcd == listprdcd2:
+    print("jumlahnya sama ini berarti skenario pertama sukses")
+
+assert listprdcd == listprdcd2#buat pastikan kesamaannya
+
+wait = WebDriverWait(driver, 5)
+
+totprice=[]
+#skenario kedua(memverifikasi jika ada pengurangan harga dengan diskon)
+price = driver.find_element_by_css_selector(".totAmt").text
+print(price)
+wait.until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "promoCode")))
+driver.find_element_by_class_name("promoCode").send_keys("rahulshettyacademy") #kalau clasnya unik biar singkat pake . aja
+driver.find_element_by_xpath("//button[@class='promoBtn']").click()
+wait.until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "promoInfo")))
+discprice =driver.find_element_by_css_selector(".discountAmt").text
+print(discprice)
+
+assert float(discprice) < float(price) ## skenario kedua berhasil
+
+#skenario kedua(memverifikasi jumlah dari produk  dalam halaman checkout sesuai dengan total jumlahnya.)
+
+jumlah = driver.find_elements_by_xpath("//td[5]//p")
+jmlh = 0
+for jumlahs in jumlah:
+    jmlh = jmlh + float(jumlahs.text)
+print(jmlh)
+
+hasil = float(driver.find_element_by_xpath("//span[@class='totAmt']").text)
+
+assert jmlh == hasil#sama kasus 3 selesai   
