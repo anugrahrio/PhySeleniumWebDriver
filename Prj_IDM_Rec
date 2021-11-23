@@ -1,0 +1,84 @@
+import time
+from selenium import webdriver  ## import dulu seleniumnya
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.select import Select
+
+
+services=Service("D:\\chromedriver.exe")
+
+driver: WebDriver = webdriver.Chrome(service=services)
+driver.implicitly_wait(3)
+driver.get("https://career.indomaretgroup.com/apply/professional/449")# buat buka url website\
+dropdown = Select(driver.find_element_by_id("melamar"))
+dropdown.select_by_visible_text("Quality Assurance")
+driver.find_element_by_css_selector("#no_ktp").send_keys("1122334455667788")
+driver.find_element_by_xpath("//input[@id='nama']").send_keys("riorio")
+driver.find_element_by_xpath("//span[contains(text(),'Laki-Laki')]").click()
+driver.find_element_by_id("no_hp1").send_keys("1122334455")
+driver.find_element_by_css_selector("#no_hp2").send_keys("5544332211")
+driver.find_element(By.NAME, "email").send_keys("riorio@gmail.com")
+emailinp = driver.find_element(By.NAME, "email").get_attribute('value')
+print(emailinp)
+emcheck ="@gmail.com"
+if emcheck in emailinp:
+    print("email benar")
+else:
+    print("email salah")
+driver.implicitly_wait(5)
+driver.find_element(By.XPATH, "//input[@id='tanggal_lahir']").click()
+driver.find_element(By.XPATH, "//input[@class='numInput cur-year']").click()
+driver.find_element(By.XPATH, "//input[@class='numInput cur-year']").send_keys("1993")
+driver.find_element(By.XPATH,"//select[@class='flatpickr-monthDropdown-months']").click()
+time.sleep(2)  ##ngepause jeda otomatis selama dua detik
+bulan = driver.find_elements(By.XPATH, "//option[@class='flatpickr-monthDropdown-month']")
+print(len(bulan))
+for bulans in bulan:
+    if bulans.text == "September":
+        bulans.click()
+        break
+driver.find_element(By.XPATH, "//div[@class='flatpickr-days']//span[4]").click()
+dropdown = Select(driver.find_element_by_id("agama"))
+dropdown.select_by_visible_text("Islam")
+driver.find_element(By.XPATH, "//input[@placeholder='Pilih Data Suku']").send_keys("bet")
+time.sleep(3)
+suku = driver.find_elements(By.XPATH, "//ul[@class='select2-results__options']//li")
+print(len(suku))
+for sukus in suku:
+    if sukus.text == "Betawi":
+        sukus.click()
+        break
+
+driver.find_element(By.XPATH, "//span[contains(text(),'Belum Menikah')]").click()
+driver.find_element(By.XPATH, "//select[@id='pendidikan']").click()
+time.sleep(3)
+pendidikan = driver.find_elements(By.XPATH, "//select[@id='pendidikan']//option")
+for pendidikans in pendidikan:
+    if pendidikans.text =="S1":
+        pendidikans.click()
+        break
+driver.find_element(By.XPATH, "//span[@id='select2-selectInstitusi-container']").click()
+driver.find_element(By.XPATH, "//span[@class='select2-search select2-search--dropdown']//input[@class='select2-search__field']").send_keys("universitas tri")
+time.sleep(5)
+uni = driver.find_elements(By.XPATH, "//span[@class='select2-results']//li[@class='select2-results__option']//span")
+for unis in uni:
+    if unis.text=="Universitas Trilogi":
+        unis.click()
+        break
+driver.find_element(By.XPATH, "//span[@id='select2-selectProgramStudi-container']").click()
+driver.find_element(By.XPATH, "//span[@class='select2-search select2-search--dropdown']//input[@class='select2-search__field']").send_keys("infor")
+time.sleep(3)
+jurusan = driver.find_elements(By.XPATH, "//ul[@id='select2-selectProgramStudi-results']//li//span")
+for jurusans  in jurusan:
+    if jurusans.text=="Teknik Informatika":
+        jurusans.click()
+        break
+driver.find_element(By.XPATH, "//select[@id='ipk']").click()
+dropdownipk = Select(driver.find_element_by_id("ipk"))
+dropdownipk.select_by_visible_text("3.25 - 3.49")
+driver.find_element(By.XPATH, "//select[@id='lulus']").click()
+dropdownlulus = Select(driver.find_element_by_id("lulus"))
+dropdownlulus.select_by_visible_text("2019")
+driver.find_element(By.XPATH, "//textarea[@id='keahlian_khusus']").send_keys("pemograman")
