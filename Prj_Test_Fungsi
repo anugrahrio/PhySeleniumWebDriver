@@ -1,3 +1,9 @@
+## disini akan menjoba menguji aplikasi web dengan fungsi sebagai berikut
+# 1. memvalidasi apapun produk yg telah dipilih dalam halaman pertama akan muncul dihalaman kedua.
+# 2. memverifikasi jika ada pengurangan harga dengan diskon
+# 3. memverifikasi jumlah dari produk  dalam halaman checkout sesuai dengan total jumlahnya.
+# 4. memvirifikasi search box berfungsi
+
 import time
 from selenium import webdriver  ## import dulu seleniumnya
 from selenium.webdriver.chrome.service import Service
@@ -13,12 +19,6 @@ services = Service("D:\\chromedriver.exe")
 driver: WebDriver = webdriver.Chrome(service=services)
 driver.get("https://rahulshettyacademy.com/seleniumPractise")
 driver.implicitly_wait(5)
-
-## disini akan menjoba menguji aplikasi web dengan fungsi sebagai berikut
-# 1. memvalidasi apapun produk yg telah dipilih dalam halaman pertama akan muncul dihalaman kedua.
-# 2. memverifikasi jika ada pengurangan harga dengan diskon
-# 3. memverifikasi jumlah dari produk  dalam halaman checkout sesuai dengan total jumlahnya.
-# 4. memvirifikasia search box berfungsi
 
 ## case 1(memvalidasi apapun produk yg telah dipilih dalam halaman pertama akan muncul dihalaman kedua)
 
