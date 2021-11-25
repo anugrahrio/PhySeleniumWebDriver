@@ -1,0 +1,32 @@
+#disini akan menguji self assessment covid untuk karyawan indomaret dengan kasus yg mengisi tanpa gejala dan taat prokes.
+
+from selenium import webdriver## import dulu seleniumnya
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+
+services=Service("D:\\chromedriver.exe")
+
+driver: WebDriver = webdriver.Chrome(service=services)
+
+driver.get("https://self-assessment-covid19.hrindomaret.com")# buat buka url website\
+driver.implicitly_wait(10)
+driver.find_element(By.XPATH, "//input[@type='text']").send_keys("2015116246")
+driver.find_element(By.XPATH, "//input[@id='password']").send_keys("akuanaksehat")
+driver.find_element(By.XPATH,"//button[@class='mb-1 v-btn v-btn--block v-btn--contained theme--light v-size--default primary']").click()
+#time.sleep(3)
+kode = driver.find_element(By.XPATH, "//div[@id='swal2-content']").text
+driver.find_element(By.XPATH, "//input[@class='swal2-input']").send_keys(kode)
+driver.find_element(By.XPATH, "//button[@class='swal2-confirm swal2-styled']").click()
+driver.find_element(By.XPATH, "//div[@class='col col-12']/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]").click()
+driver.find_element(By.XPATH, "//div[@class='col col-12']/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]").click()
+driver.find_element(By.XPATH, "//div[@class='col col-12']/div[5]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]").click()
+driver.find_element(By.XPATH, "//div[@class='col col-12']/div[@class='v-card__text']/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]").click()
+tidak = driver.find_elements(By.XPATH, "//div[10]//div//div[1]//div[1]//div[1]//div[1]//div[2]//div[1]//div")
+tidaks = []
+for tidaks in tidak:
+    tidaks.click()
+driver.find_element(By.XPATH, "//div[@class='col col-12']/div[11]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]").click()
+driver.find_element(By.XPATH, "//span[@class='v-btn__content'][contains(text(),'submit')]").click()
+driver.find_element(By.XPATH, "//button[@class='swal2-confirm swal2-styled']").click()
