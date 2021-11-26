@@ -1,0 +1,47 @@
+import time
+from selenium import webdriver## import dulu seleniumnya
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+
+## dini kita akan menguji coba sebuah website belanja dengan fungsi sebagai berikut :
+## 1. memilih produk hanya blackberry saja.
+## 2. produk yg sudah dipilih pastikan masuk di checkout page dan sesuai
+## 3. pilihan negara pengirimannya berfungsi dengan baik
+
+services = Service("D:\\chromedriver.exe")
+driver: WebDriver = webdriver.Chrome(service=services)
+driver.maximize_window()
+time.sleep(2)
+driver.implicitly_wait(10)
+driver.get("https://www.rahulshettyacademy.com/angularpractice/shop")
+## case 1. memilih produk hanya blackberry saja.
+a = 0
+produk = driver.find_elements(By.XPATH, "//h4[@class='card-title']//a")
+
+
+for produks in produk:
+    a = a + 1
+    if produks.text =='Blackberry':
+        print(a)
+        converted_a = str(a)
+        driver.find_element(By.XPATH, "//app-card["+ converted_a +"]//div[1]//div[2]//button[1]").click()
+        break
+## case pertama selesai.
+
+## case 2. produk yg sudah dipilih pastikan masuk di checkout page dan sesuai
+ChkBttn = driver.find_element(By.XPATH, "//a[@class='nav-link btn btn-primary']").click()
+driver.execute_script("arguments[0]", ChkBttn)## menggunakan java script
+Keranjang = driver.find_element(By.XPATH, "//a[contains(text(),'Blackberry')]").text
+print(Keranjang)
+assert Keranjang == "Blackberry"## case dua sukses
+
+## case 3. pilihan negara pengirimannya berfungsi dengan baik
+driver.find_element(By.XPATH, "//button[@class='btn btn-success']").click()
+driver.find_element(By.XPATH, "//input[@id='country']").send_keys("Indonesia")
+negara = driver.find_element(By.XPATH, "//div[@class='suggestions']//ul//li//a").text
+if negara == "Indonesia":
+    driver.find_element(By.XPATH, "//div[@class='suggestions']//ul//li//a").click()
+driver.find_element(By.XPATH, "//label[contains(text(),'I agree with the')]").click()
+driver.find_element(By.XPATH, "//input[@class='btn btn-success btn-lg']").click()## case ketiga sukses
