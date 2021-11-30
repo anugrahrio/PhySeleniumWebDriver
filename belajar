@@ -1,0 +1,189 @@
+import time
+
+import pytest
+from selenium import webdriver  ## import dulu seleniumnya
+from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+
+# driver = webdriver.Chrome(executable_path="D:\\chromedriver.exe")
+
+services = Service("D:\\chromedriver.exe")
+driver: WebDriver = webdriver.Chrome(service=services)
+# driver.implicitly_wait(5) #jgn lupa uncomen kalau mau test implicit wait, dan komen explicit waitnya
+
+# ##drop down fleksibiel
+# # driver.get("https://www.rahulshettyacademy.com/dropdownsPractise/")  # buat buka url website\
+# # driver.find_element_by_id("autosuggest").send_keys("ind")
+# # time.sleep(2)  ##ngepause jeda otomatis selama dua detik
+# # # balik lagi ke menu dropdown fleksibel terus find element lagi yg mau dipilih, pastikan cek tagg <li> atau list
+# # # terus pilih kelasnya
+# # countries = driver.find_elements_by_css_selector("li[class='ui-menu-item'] a")
+# # print(len(countries))
+# # for country in countries:
+# #     if country.text == "Indonesia":
+# #         country.click()
+# #         break
+# # #buat ngecek hasilnya beneran indonesia apa bukan kalau outputnya 0 berarti benar
+# # assert driver.find_element_by_id("autosuggest").get_attribute('value') == "Indonesia"
+# ## check box tapi buat mencet semua check boxnya
+# driver.get("https://www.rahulshettyacademy.com/AutomationPractice/")  # buat buka url website
+# #pastikan cari atribut yg sama dengan checkbox lainnya di inspect elemen, biasanya itu aatributnya itu type bukan id
+# # checkboxes = driver.find_elements_by_xpath("//input[@type='checkbox']")
+# # print(len(checkboxes))#buat ngecek ada berapa banyak jumlah checkbox yg memiliki atribut yg sama
+# # for checkbox in checkboxes:
+# #     checkbox.click()#perintah ngekliknya
+# #     assert checkbox.is_selected()
+#
+# ## check box tapi buat mencet salah satu check boxnya
+# driver.get("https://www.rahulshettyacademy.com/AutomationPractice/")  # buat buka url website
+# #pastikan cari atribut yg sama dengan checkbox lainnya di inspect elemen, biasanya itu aatributnya itu type bukan id
+# checkboxes = driver.find_elements_by_xpath("//input[@type='checkbox']")
+# print(len(checkboxes))#buat ngecek ada berapa banyak jumlah checkbox yg memiliki atribut yg sama
+# for checkbox in checkboxes:
+#     if checkbox.get_attribute("value")=="option2":
+#         checkbox.click()#perintah ngekliknya
+#         assert checkbox.is_selected()
+#
+# ##radio button pakai list, lebih mudah cari kesamaan atribut radio button satu dengan lainnya. biasanya itu atribut nama/class
+# radiobuttons = driver.find_elements_by_name("radioButton")
+# radiobuttons[2].click()#ingat list itu dimuali dari 0 kalau 2
+#
+# ##handle java/java script pakai selenium
+# #handle pop up website alart yg hanya muncul kata ok
+# driver.find_element_by_css_selector("#name").send_keys("Rio")
+# driver.find_element_by_css_selector("#alertbtn").click()
+# alart =driver.switch_to.alert#yg ini cocoknya hanya satu tombol yaitu ok
+# print(alart.text)
+# alart.accept()
+# #pop up konfirmasi yg ada button ok dan cancel
+# driver.find_element_by_css_selector("#confirmbtn").click()
+# confirm =driver.switch_to.alert
+# confirm.accept()#buat ok dan dismiss buat cancel
+# ## lanjut belajar ke wait
+# wait penting karena website butuh waktu untuk prosesnya dan ga instan, jadi wait digunakan untuk menunggu waktu proses tersebut
+# driver.get("https://rahulshettyacademy.com/seleniumPractise")
+# # jangan lupa kalau pake css selector misalnya dichropath pnjang bisa dipersingan pakai rumusnya tag.NamaKelas
+# # terus cek dichropath kalau bisa ambil namanya buat dijadiin isi css selectornya
+# driver.find_element_by_css_selector("input.search-keyword").send_keys("ber")  ##suggestion box
+# time.sleep(5)  ##jangan lupa namanya suggestion butuh loading
+# # jangan lupa pakai validasi jumlah buat ngecek hasil inputannya jgn lupa lagi cari jumlah pakai atribut jgn yg unik dan cari kesamaannya dan pakainya elments dengan s
+# tstjmlh = driver.find_elements_by_xpath("//div[@class='product']")
+# print(len(tstjmlh))
+# # buat ngeklik semua tombolnya
+# tombols = driver.find_elements_by_xpath("//div[@class='product-action']/button")
+# for tombol in tombols:
+#     tombol.click()  # perintah ngekliknya
+#     # assert checkbox.is_selected()
+#
+# #####jgn lupa unkomen bagian ini kalau mau test implict waitnya, dan komen explicit waitnya
+# # driver.find_element_by_xpath("//img[@alt='Cart']").click()#
+# # driver.find_element_by_xpath("//button[contains(text(),'PROCEED TO CHECKOUT')]").click()
+# # driver.find_element_by_class_name("promoCode").send_keys("rahulshettyacademy") #kalau clasnya unik biar singkat pake . aja
+# # driver.find_element_by_xpath("//button[@class='promoBtn']").click()
+# # #kalau tanpa implicit wait objek ini ga keluar karena loading
+# # #langsung eror karena objeknya belum muncul, jadi selenium instan langsung cari objeknya
+# # #biar muncul pake implisit wait, kalau wait biasa/time.sleep nunggu bbrp detik hingga detik itu selesai,
+# # # kalau implisit menunggu kalau objeknya ada akan selesai menunggu(contoh setting 5 detik kalau objeknya keluar dalam dua detik langsung selesai menunggu)
+# # #buat inisialisasinya jgn lupa masukin di halaman paling atas dengan method implicity_wait('detiknya')
+# # #kalau implicit kan dijadiin objek jadi elemen objeknya otomatis pakai itu, kalau eksplicit ya cm dituujukan ke elemen itu saja
+# # print(driver.find_element_by_css_selector(".promoInfo").text)
+#
+# # explicit wait, kalau mau test dijalanin jgn lupa komen implicit waitnya diatas dan komen juga bagian atasnya dari sini
+# # jgn lupa explicit hanya ke bagian atau element itu saja
+# driver.find_element_by_xpath("//img[@alt='Cart']").click()  #
+# driver.find_element_by_xpath("//button[contains(text(),'PROCEED TO CHECKOUT')]").click()
+# ##explicit wait
+# wait = WebDriverWait(driver, 5)
+# # menunggu sampai element class name itu muncul kalau implicit nunggu secara menyeluruh kalau explicit hanya nunggu elemen itu muncul
+# wait.until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "promoCode")))
+# driver.find_element_by_class_name("promoCode").send_keys("rahulshettyacademy") #kalau clasnya unik biar singkat pake . aja
+# driver.find_element_by_xpath("//button[@class='promoBtn']").click()
+
+##iframe. ada tag yg ga bisa diakses seperti biasanyanya
+
+#iframe, frameset, frame
+# driver.get("https://the-internet.herokuapp.com/iframe")
+# #frame id or frame name or index value
+# driver.switch_to.frame("mce_0_ifr")##buat masuk ke frame
+# driver.find_element_by_css_selector("#tinymce").clear()
+# driver.find_element_by_css_selector("#tinymce").send_keys("I am able to automate")
+# driver.switch_to.default_content()## buat keluar lagi dari frame
+# print(driver.find_element_by_tag_name("h3").text)
+
+
+## mouse hover
+# driver.get("https://www.rahulshettyacademy.com/AutomationPractice/")
+# action = ActionChains(driver)
+# mouse = driver.find_element(By.XPATH, "//button[@id='mousehover']")
+# action.move_to_element(mouse).perform()
+# menuTop = driver.find_element(By.LINK_TEXT, "Top")##buat ngehover ke menu TOP ingat lagi kalau link atau ahref bisa pakai ini
+# action.move_to_element(menuTop).click()##buat ngekliknya
+
+## double klik
+# driver.get("https://chercher.tech/practice/practice-pop-ups-selenium-webdriver")
+# action = ActionChains(driver)
+# #action.context_click(driver.find_element_by_id("double-click")).perform() #context itu klik kanan
+# action.double_click(driver.find_element_by_id("double-click")).perform()
+# alert = driver.switch_to.alert
+# assert "You double clicked me!!!, You got to be kidding me" == alert.text
+# alert.accept()
+
+## java script executor (DOM Document) sebagai  pemilik semua objek dalam webpage jadi bisa mengakses segala elementnya
+## cara aksesnya dengan inspect element lalu pilih console. cnth (document.getElementBy....)
+# driver.get("https://www.rahulshettyacademy.com/angularpractice/")
+# driver.find_element_by_name("name").send_keys("rio")
+# nama = driver.find_element_by_name("name").text
+# print(driver.find_element_by_name("name").text)## hasilnya blank
+# print(nama)## sama juga blank.
+# print(driver.find_element_by_name("name").get_attribute("value"))# tercetak karena disimpelkan oleh selenium yg aslinya turunan dari dom/js
+# # menggunakan murni javascript ketik di console document.getElementsByName("name")[0].value
+# print(driver.execute_script('return document.getElementsByName("name")[0].value')) ## jangan lupa tambahkan return untuk mengembalikan data ke selenium
+# nama = driver.execute_script('return document.getElementsByName("name")[0].value') ## bisa juga dijadikan sebagai objek
+# print(nama)
+# ##click dengan javascript case ini biasanya digunakan ada tombol hidden, karena selenium berfungsi jika kelihatan.
+# shoppbutton= driver.find_element_by_xpath("//a[contains(text(),'Shop')]")
+# driver.execute_script("arguments[0]",shoppbutton)## ("arguments[0]",shoppbutton,,)
+# ## scroll, selenium ga bisa scroll untuk scroll menggunakan javascript
+# driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")## kalau lebih lengkap ada digoogle keyword scroll down/up javascript
+
+##chrome option, memberikan pengaturan pada browser chrome yg sesuai dengan keinginan kita.
+## dokumentasi lengkapnya bisa di lihat https://www.programcreek.com/python/example/100025/selenium.webdriver.ChromeOptions
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument("--window-size=1920x1080")
+driver.get("https://www.rahulshettyacademy.com/angularpractice/")
+
+
+
+
+## jangan lupa tiap file pytest diaawali dengan test_
+## tiap kode ditulis harus dengan standar function(def) yaitu nama function diawali dengan test_
+## terus tambahin juga pytestnya di edit configuration terus tambahin script ke bagian filenya
+## kalau mau jalanin testnya buka cmd copy direktorinya lalu ketik cd paste entere terus ketik py.test -v -s
+## kalau mau jalanin testnya buka cmd copy direktorinya lalu ketik cd paste entere terus ketik py.test -v -s
+## untuk menjalankan satu file tertentu py.test "nama file" -v -s tapi jgn lupa tenteukan direktornya
+## bisa juga pakai cara settingg pytest dibagian edit configuration ini untuk
+## untuk menjalankan method tertentu py.test -k 'nama method' -v -s note untuk nama itu seperti '%%' dalam sql tapi tanpa notasi
+## buat jalanin bbrp method tertentu sekaligus beri tanda dulu pada methodnya lalu py.test -m smoke -v -s
+## buat jalanin test terlebih dahulu ginakan pytest.fixture
+
+@pytest.mark.smoke ## tanda method diberi nama smoke
+def test_FirstFunction():
+    pesan ="halo"
+    assert pesan == "hi", "Tes gagal karena string ga cocok"
+
+#@pytest.mark.skip # buat melewatkan
+def test_SecondFunction():
+    a = 1
+    b = 3
+    assert b == a + 2, "Pertambahan tidak cocok"
+@pytest.mark.smoke ## tanda method diberi nama smoke
+def test_ThirdFunction():
+    c = 9
+    assert c == 3 * 3, "perkalian tidak cocok"
