@@ -1,0 +1,205 @@
+import pytest
+import gettext
+from selenium import webdriver  ## import dulu seleniumnya
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.select import Select
+import datetime
+import time
+
+# services=Service("D:\\chromedriver.exe")
+#
+# driver: WebDriver = webdriver.Chrome(service=services)
+driver = webdriver.Chrome("D:\\chromedriver.exe")
+driver.implicitly_wait(3)
+driver.get("https://career.indomaretgroup.com/apply/professional/449")  # buat buka url website\
+driver.implicitly_wait(5)
+
+
+def test_career():  ## memvalidasi lamaran sebagai QA
+    driver.find_element(By.XPATH, "//select[@id='melamar']").click()
+    lamar = driver.find_elements(By.XPATH, "//select[@id='melamar']//optgroup//option")
+    for lamars in lamar:
+        if lamars.text == "Quality Assurance":
+            lamars.click()
+            karir = lamars.text
+    assert karir == "Quality Assurance", "lamaran salah"
+
+
+def test_ktp16():  ## memvalidasi ktp 16 digit
+    driver.find_element(By.CSS_SELECTOR, "#no_ktp").send_keys("1122334455667788")
+    noktp = driver.find_element(By.CSS_SELECTOR, "#no_ktp").get_attribute('value')
+    idktp = len(noktp)
+    assert idktp == 16, "jumlah ktp salah"
+
+
+def test_ktpnum():  ## memvalidasi ktp hanya angka
+    numktp = driver.find_element(By.CSS_SELECTOR, "#no_ktp").get_attribute('value')
+    numsktp = numktp.isdigit()
+    assert numsktp == True, "ktp hanya boleh angka"
+
+
+def test_nama():  ## memvalidasi nama hanya huruf tanpa angka, simbol dan tidak boleh kosong
+    driver.find_element(By.XPATH, "//input[@id='nama']").send_keys("riorio")
+    nama = driver.find_element(By.XPATH, "//input[@id='nama']").get_attribute('value')
+    namas = nama != '' and all(chr.isalpha() or chr.isspace() for chr in nama)
+    assert namas == True, "nama mengandung angka/simbol"
+
+
+def test_kelamin():  ## memvalidasi radio button untuk laki-laki
+    driver.find_element(By.XPATH, "//span[contains(text(),'Laki-Laki')]").click()
+    laki = driver.find_element(By.XPATH, "//span[contains(text(),'Laki-Laki')]").text
+    assert laki == "Laki-Laki", "jenis kelamin perempuan"
+
+
+def test_nohp1a():  ## memvalidasi hanya menerima angka
+    driver.find_element(By.ID, "no_hp1").send_keys("123456a")
+    nohp1 = driver.find_element(By.ID, "no_hp1").get_attribute('value')
+    nohp1s = nohp1.isdigit()
+    assert nohp1s == True, "ada huruf/simbol dalam nomer hp"
+
+
+def test_nphp1b():
+    nohp1b = driver.find_element(By.ID, "no_hp1").get_attribute('value')
+    nohp1s = len(nohp1b)
+    assert nohp1s >= 7, "digit harus lebih besar dari 7"
+
+
+def test_nohp2a():  ## memvalidasi hanya menerima angka
+    driver.find_element(By.XPATH, "//input[@id='no_hp2']").send_keys("1234567")
+    nohp1 = driver.find_element(By.ID, "no_hp1").get_attribute('value')
+    nohp1s = nohp1.isdigit()
+    assert nohp1s == True, "ada huruf/simbol dalam nomer hp"
+
+
+def test_email():
+    driver.find_element(By.NAME, "email").send_keys("riorio@gmail.com")
+    emailinp = driver.find_element(By.NAME, "email").get_attribute('value')
+    emcheck = "@gmail.com"
+    assert emcheck in emailinp, "email salah"
+
+
+def test_tgllahir():  ## memvalidasi tgl bukan hari ini atau besok
+    driver.find_element(By.XPATH, "//input[@id='tanggal_lahir']").click()
+    driver.find_element(By.XPATH, "//input[@class='numInput cur-year']").click()
+    driver.find_element(By.XPATH, "//input[@class='numInput cur-year']").send_keys("1993")
+    thn = driver.find_element(By.XPATH, "//input[@class='numInput cur-year']").get_attribute('value')
+    driver.find_element(By.XPATH, "//select[@class='flatpickr-monthDropdown-months']").click()
+    time.sleep(2)  ##ngepause jeda otomatis selama dua detik
+    bulan = driver.find_elements(By.XPATH, "//option[@class='flatpickr-monthDropdown-month']")
+    print(len(bulan))
+    for bulans in bulan:
+        if bulans.text == "September":
+            bulans.click()
+            break
+    hari = driver.find_elements(By.XPATH, "//div[@class='flatpickr-days']//span")
+    for haris in hari:
+        if haris.text == "1":
+            haris.click()
+            break
+    tgl = driver.find_element(By.XPATH, "//input[@id='tanggal_lahir']").get_attribute('value')
+    tglwaktu = datetime.datetime.strptime(tgl, "%Y-%m-%d").strftime("%Y-%m-%d")
+    besok = datetime.date.today() + datetime.timedelta(days=1)
+    hrini = datetime.date.today()
+    strHrIni = hrini.strftime("%Y-%m-%d")
+    strBesok = besok.strftime("%Y-%m-%d")
+    assert tglwaktu != strHrIni and tglwaktu != strBesok
+
+
+@pytest.mark.smoke
+def test_agama():  ## memvalidasi agama
+    driver.find_element(By.XPATH, "//select[@id='agama']").click()
+    agama = driver.find_elements(By.XPATH, "//select[@id='agama']//option")
+    agam = []
+    i = 0
+    for agamas in agama:
+        agam.append(agamas.text)
+        i = i + 1
+        if agamas.text == "Islam":
+            agamas.click()
+    pilagama = driver.find_element(By.XPATH, "//select[@id='agama']").get_attribute('value')
+    assert pilagama in agam, "Pilihan agama tidak ada"
+
+@pytest.mark.skip(reason="buat case mengisi satu suku")
+def test_suku():## validasi satu suku yg dipilih (case suku betawi)
+    driver.find_element(By.XPATH, "//input[@placeholder='Pilih Data Suku']").send_keys("bet")
+    suku = driver.find_elements(By.XPATH, "//ul[@class='select2-results__options']//li")
+    for sukus in suku:
+        if sukus.text == "Betawi":
+            pilsukus = sukus.text
+            sukus.click()
+            break
+    pilsuku = driver.find_element(By.XPATH, "//li[@class='select2-selection__choice']").get_attribute('title')
+    assert pilsukus == pilsuku, "suku tidak sama"
+
+@pytest.mark.smoke
+def test_suku2():## validasi dua suku yg dipilih (case suku betawi dan jawa)
+    sukusuku = []
+    suku2 = []
+    driver.find_element(By.XPATH, "//input[@placeholder='Pilih Data Suku']").send_keys("bet")
+    suku = driver.find_elements(By.XPATH, "//ul[@class='select2-results__options']//li")
+    for sukus in suku:
+        if sukus.text == "Betawi":
+            sukusuku.append(sukus.text)
+            sukus.click()
+            break
+    driver.find_element(By.XPATH, "//input[@class='select2-search__field']").send_keys("jaw")
+    sukue = driver.find_elements(By.XPATH, "//ul[@class='select2-results__options']//li")
+    for sukud in sukue:
+        if sukud.text == "Jawa":
+            sukusuku.append(sukud.text)
+            sukud.click()
+            break
+    sukued = driver.find_elements(By.XPATH, "//ul[@class='select2-selection__rendered']//li[@class='select2-selection__choice']")
+    for sukueds in sukued:
+        suku2.append(sukueds.get_attribute('title'))
+    assert sukusuku == suku2, "hanya boleh maksimal dua suku"
+
+@pytest.mark.smoke
+def test_suku2click():
+    driver.find_element(By.XPATH, "//ul[@class='select2-selection__rendered']").click()
+    eleSelected = driver.find_element(By.XPATH, "//li[@class='select2-results__option select2-results__message']").is_displayed()
+    assert eleSelected == True, "maksimal dua"
+
+def test_martial():
+    driver.find_element(By.XPATH,"//span[contains(text(),'Belum Menikah')]").click()
+    BlmMnkh = driver.find_element(By.XPATH, "//span[contains(text(),'Belum Menikah')]").get_attribute('value')
+    assert BlmMnkh == "Belum Menikah", "salah"
+
+
+# driver.find_element(By.XPATH, "//span[contains(text(),'Belum Menikah')]").click()
+# driver.find_element(By.XPATH, "//select[@id='pendidikan']").click()
+# time.sleep(3)
+# pendidikan = driver.find_elements(By.XPATH, "//select[@id='pendidikan']//option")
+# for pendidikans in pendidikan:
+#     if pendidikans.text =="S1":
+#         pendidikans.click()
+#         break
+# driver.find_element(By.XPATH, "//span[@id='select2-selectInstitusi-container']").click()
+# driver.find_element(By.XPATH, "//span[@class='select2-search select2-search--dropdown']//input[@class='select2-search__field']").send_keys("universitas tri")
+# time.sleep(5)
+# uni = driver.find_elements(By.XPATH, "//span[@class='select2-results']//li[@class='select2-results__option']//span")
+# for unis in uni:
+#     if unis.text=="Universitas Trilogi":
+#         unis.click()
+#         break
+# driver.find_element(By.XPATH, "//span[@id='select2-selectProgramStudi-container']").click()
+# driver.find_element(By.XPATH, "//span[@class='select2-search select2-search--dropdown']//input[@class='select2-search__field']").send_keys("infor")
+# time.sleep(3)
+# jurusan = driver.find_elements(By.XPATH, "//ul[@id='select2-selectProgramStudi-results']//li//span")
+# for jurusans  in jurusan:
+#     if jurusans.text=="Teknik Informatika":
+#         jurusans.click()
+#         break
+# driver.find_element(By.XPATH, "//select[@id='ipk']").click()
+# dropdownipk = Select(driver.find_element_by_id("ipk"))
+# dropdownipk.select_by_visible_text("3.25 - 3.49")
+# driver.find_element(By.XPATH, "//select[@id='lulus']").click()
+# dropdownlulus = Select(driver.find_element_by_id("lulus"))
+# dropdownlulus.select_by_visible_text("2019")
+# driver.find_element(By.XPATH, "//textarea[@id='keahlian_khusus']").send_keys("pemograman")
+# driver.find_element(By.XPATH, "//span[contains(text(),'Belum Pernah')]").click()
+# dropdown1 = Select(driver.find_element(By.XPATH,"//select[@id='lokasi_psikotest']"))
+# dropdown1.select_by_visible_text("Head Office Jakarta")
